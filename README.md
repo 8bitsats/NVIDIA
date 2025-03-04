@@ -959,3 +959,134 @@ This code fully implements the Cheshire agent as described, leveraging NVIDIA's 
 - [Web3.py Documentation](https://web3py.readthedocs.io/en/stable/)
 - [Solarium GitHub](https://github.com/solana-labs/solarium)
 - [CoinGecko API Documentation](https://www.coingecko.com/en/api/documentation)
+Below, I'll provide a step-by-step explanation of what Jupyter is and how to use it, incorporating the URL `https://jupyter0-j4ndczd0x.brevlab.com/` as an example of a hosted Jupyter Notebook instance. This guide is designed to be beginner-friendly, detailed, and practical, assuming you’re new to Jupyter or want to use it via a preconfigured environment like the one provided by Brev.dev.
+
+---
+
+### What is Jupyter?
+
+Jupyter is an open-source project that provides an interactive computational environment for creating and sharing documents called "notebooks." These notebooks combine live code, equations, visualizations, narrative text, and rich media in a single, web-based interface. Jupyter stands for **Ju**lia, **Pyt**hon, and **R**, reflecting its origins with these programming languages, though it now supports over 40 languages.
+
+- **Purpose**: It’s widely used in data science, scientific computing, machine learning, and education for prototyping code, exploring data, and presenting results interactively.
+- **Key Component**: The Jupyter Notebook, a web application that runs in your browser, served by a local or remote server.
+- **Flexibility**: Notebooks can be saved, shared, and rendered online (e.g., via GitHub or NBViewer), making them ideal for collaboration.
+
+The URL `https://jupyter0-j4ndczd0x.brevlab.com/` is an example of a hosted Jupyter Notebook instance, likely set up by Brev.dev, a platform that provisions cloud GPUs and preconfigures environments for AI/ML tasks. Accessing this URL would take you directly to a Jupyter interface without needing to install anything locally.
+
+---
+
+### Step-by-Step Guide: Understanding Jupyter and Using It
+
+#### Step 1: Understand the Components of Jupyter
+- **Notebook Server**: A backend process that runs the Jupyter application, either locally on your machine or remotely (e.g., on Brev.dev’s cloud).
+- **Kernel**: A computational engine that executes code in a specific language (e.g., Python). When you use `https://jupyter0-j4ndczd0x.brevlab.com/`, the kernel is preconfigured by Brev.dev, likely with Python and GPU support.
+- **Notebook Document**: A `.ipynb` file (JSON format) containing cells with code, text, or outputs like plots. It’s what you edit in the browser.
+- **Web Interface**: The browser-based UI where you interact with notebooks, accessible via URLs like `https://jupyter0-j4ndczd0x.brevlab.com/`.
+
+#### Step 2: Access Jupyter via the Provided URL
+Since `https://jupyter0-j4ndczd0x.brevlab.com/` is a preconfigured instance, you don’t need to install Jupyter locally. Here’s how to start:
+1. **Open Your Browser**: Use Chrome, Firefox, or any modern browser.
+2. **Navigate to the URL**: Type or paste `https://jupyter0-j4ndczd0x.brevlab.com/` into the address bar and press Enter.
+3. **Login (if required)**: Brev.dev might require authentication (e.g., a token or password). If prompted, check your Brev.dev account or documentation for credentials.
+4. **Explore the Interface**: You’ll see the Jupyter Notebook dashboard, a file explorer showing available notebooks or directories.
+
+#### Step 3: Get Familiar with the Jupyter Dashboard
+Once you’re at `https://jupyter0-j4ndczd0x.brevlab.com/`, you’ll land on the dashboard:
+- **File List**: Displays notebooks (`.ipynb` files) and folders. Brev.dev might pre-populate this with example notebooks.
+- **New Button**: Click this (top right) to create a new notebook. Select a kernel (e.g., Python 3) if options appear.
+- **Upload Button**: Use this to upload your own `.ipynb` files if you have them.
+- **Running Tab**: Shows active notebooks or terminals (useful for monitoring if you’re using GPU resources).
+
+#### Step 4: Create or Open a Notebook
+1. **Create a New Notebook**:
+   - Click “New” > “Python 3” (or the available kernel).
+   - A new tab opens with an untitled notebook.
+2. **Open an Existing Notebook**:
+   - If Brev.dev provided examples (e.g., a GPU demo), click its name (e.g., `demo.ipynb`) to open it.
+   - The notebook loads in a new tab with cells ready to view or edit.
+
+#### Step 5: Understand Notebook Cells
+A notebook consists of cells, which can be:
+- **Code Cells**: Where you write and run code (e.g., Python). They have a `[ ]` prompt on the left.
+- **Markdown Cells**: For text, headings, or equations (formatted with Markdown syntax).
+- **Output Cells**: Results of code execution (e.g., text, plots) appear below code cells.
+
+To switch cell types:
+- Select a cell, then use the dropdown (top toolbar) to choose “Code” or “Markdown.”
+
+#### Step 6: Write and Run Code
+1. **Add Code**:
+   - Click an empty code cell.
+   - Type a simple command, e.g.:
+     ```python
+     print("Hello from Cheshire!")
+     ```
+2. **Run the Cell**:
+   - Press `Shift + Enter` (runs and moves to the next cell) or `Ctrl + Enter` (runs and stays).
+   - Output appears below: `Hello from Cheshire!`
+3. **Test GPU (if available)**:
+   - Since Brev.dev provides GPUs, try:
+     ```python
+     import torch
+     print(torch.cuda.is_available())  # Should print True if GPU is configured
+     ```
+   - This leverages the preconfigured environment at `https://jupyter0-j4ndczd0x.brevlab.com/`.
+
+#### Step 7: Use Markdown for Documentation
+1. **Create a Markdown Cell**:
+   - Click “+” (toolbar) to add a cell, set it to “Markdown.”
+   - Type:
+     ```markdown
+     # Cheshire Agent Demo
+     Testing blockchain queries with NVIDIA AI.
+     ```
+2. **Render It**:
+   - Press `Shift + Enter` to format the text as a heading and paragraph.
+
+#### Step 8: Save and Share Your Work
+1. **Save**:
+   - Click the floppy disk icon (top left) or press `Ctrl + S`.
+   - The `.ipynb` file updates on the server (Brev.dev’s cloud).
+2. **Download**:
+   - Go to “File” > “Download” to save the `.ipynb` file locally.
+3. **Share**:
+   - Share the URL `https://jupyter0-j4ndczd0x.brevlab.com/` with others if Brev.dev allows public access (check permissions via Brev.dev’s dashboard).
+   - Alternatively, upload the `.ipynb` file to GitHub or NBViewer for rendering.
+
+#### Step 9: Leverage the Cheshire Agent Example
+Assuming you integrate the Cheshire agent code (from the previous response) into this environment:
+1. **Paste the Code**:
+   - Open a new notebook at `https://jupyter0-j4ndczd0x.brevlab.com/`.
+   - Copy-paste the full `cheshire_agent.py` code into a code cell.
+2. **Run It**:
+   - Execute the cell (`Shift + Enter`).
+   - The script starts the agent and outputs a Daily room URL (e.g., `https://yourdomain.daily.co/room-name`).
+3. **Interact**:
+   - Open the Daily URL in another tab to talk to Cheshire about blockchain data.
+
+#### Step 10: Troubleshooting and Tips
+- **No GPU Access**: If `torch.cuda.is_available()` returns `False`, the instance might not have a GPU assigned. Contact Brev.dev support or check your instance specs.
+- **Connection Errors**: Ensure your internet is stable; Brev.dev hosts this remotely.
+- **Restart Kernel**: If code hangs, click “Kernel” > “Restart” to reset.
+- **Explore**: Use `!pip list` in a cell to see preinstalled libraries (e.g., PyTorch, Web3.py).
+
+---
+
+### How to Use Jupyter Locally (Optional)
+If you want to install Jupyter locally instead of using `https://jupyter0-j4ndczd0x.brevlab.com/`:
+1. **Install**: `pip install jupyter` (or use Anaconda).
+2. **Run**: `jupyter notebook` in your terminal.
+3. **Access**: Opens at `http://localhost:8888` in your browser.
+4. **Follow Steps 3-9**: The interface and usage are identical.
+
+However, the Brev.dev URL provides a preconfigured GPU environment, ideal for AI tasks like running the Cheshire agent, without local setup.
+
+---
+
+### Why Use `https://jupyter0-j4ndczd0x.brevlab.com/`?
+- **Preconfigured**: Comes with Python, CUDA, and GPU drivers set up by Brev.dev.
+- **Cloud-Based**: No need for a powerful local machine.
+- **Scalable**: Suited for running complex AI models or blockchain queries.
+
+This setup lets you dive into interactive coding with minimal hassle, leveraging the power of NVIDIA GPUs and the Cheshire agent’s blockchain capabilities. Let me know if you need help testing it or adapting the Cheshire code for this environment!
+
