@@ -560,3 +560,111 @@ NeMo and Riva together form a robust ecosystem for Speech AI, from training and 
 - [Unlocking the Power of Speech AI Medium](https://edemiraydin.medium.com/unlocking-the-power-of-speech-ai-a-step-by-step-guide-to-integrating-nvidia-riva-nims-with-llm-rag-95bd92fe06a7)
 - [Nvidia Upgrades Speech AI to Pursue Enterprise Ambitions Voicebot.ai](https://voicebot.ai/2022/03/22/nvidia-upgrades-speech-ai-to-pursue-enterprise-ambitions/)
 - [Riva Speech and Translation AI NVIDIA](https://www.nvidia.com/en-us/ai-data-science/products/riva/)
+
+### Key Points
+- Research suggests that creating a "Cheshire terminal chesh ai audio agent" as the first cross-chain blockchain NVIDIA AI audio agent is feasible using Pipecat AI and NVIDIA's NeMo framework for speech, with blockchain integration for Ethereum and Solana.
+- It seems likely that the agent can handle audio interactions, provide blockchain data like wallet balances, and use Riva for speech processing, with a playful "Cheshire" personality.
+- The evidence leans toward this being a unique combination, though it's complex due to blockchain security and real-time data needs.
+
+---
+
+### Setting Up the Agent
+
+**Overview**  
+This guide walks you through setting up the "Cheshire terminal chesh ai audio agent," a conversational AI that interacts via audio and provides information about multiple blockchain networks, such as Ethereum and Solana. It uses Pipecat AI for the framework, NVIDIA's NeMo for speech models, and integrates blockchain data for a cross-chain experience.
+
+**Prerequisites**  
+- Ensure you have API keys for NVIDIA (for NeMo and Riva), Daily (for WebRTC), Infura (for Ethereum), and CoinGecko (for crypto prices). Set these as environment variables.
+- Install required libraries: `pip install pipecat-ai[daily,openai,riva,silero] web3 solarium requests`.
+
+**Steps to Create the Agent**  
+1. **Set Up Transport**: Use Daily for real-time audio interaction, creating a WebRTC room for users to join.
+2. **Speech Services**: Use Riva for Speech-to-Text (STT) and Text-to-Speech (TTS), leveraging NeMo-trained models for accuracy.
+3. **LLM Configuration**: Use NVIDIA NIM with the `meta/llama-3.3-70b-instruct` model for processing user queries.
+4. **Blockchain Integration**: Implement functions to query blockchain data, such as wallet balances for Ethereum and Solana, and crypto prices via CoinGecko.
+5. **Agent Personality**: Name the agent "Cheshire" with a friendly, approachable tone, reflecting a playful, enigmatic personality inspired by the Cheshire Cat.
+
+**Example Interaction**  
+- User: "What's the balance of my Ethereum address 0x123...?"  
+- Agent: "Let me check that for you. The balance of 0x123... on Ethereum is 1.5 ETH."
+
+---
+
+---
+
+### Survey Note: Comprehensive Analysis of Creating the Cheshire Terminal Chesh AI Audio Agent
+
+This note provides a detailed examination of creating the "Cheshire terminal chesh ai audio agent," identified as the first cross-chain blockchain NVIDIA AI audio agent, leveraging Pipecat AI, NVIDIA's NeMo framework, and blockchain integration. It expands on the setup, technical implementation, and practical considerations, ensuring a thorough understanding for developers and enterprises interested in deploying such an innovative agent.
+
+#### Introduction to the Cheshire Terminal Chesh AI Audio Agent
+
+The "Cheshire terminal chesh ai audio agent," referred to as "Cheshire" for brevity, is envisioned as a conversational AI that interacts via audio and specializes in providing information related to multiple blockchain networks. The name "Cheshire" draws inspiration from the Cheshire Cat, suggesting a playful and enigmatic personality, while "terminal chesh ai audio agent" implies a focus on audio interaction, possibly within a text-based interface context. The goal is to make it the first cross-chain blockchain NVIDIA AI audio agent, integrating with networks like Ethereum and Solana, and utilizing NVIDIA's NeMo for speech capabilities.
+
+Research suggests that this agent can be built using Pipecat AI, a framework for voice and multimodal conversational agents, with NVIDIA's NeMo for training speech models and Riva for deployment. It seems likely that the agent will handle audio inputs, process them through Speech-to-Text (STT), use a Large Language Model (LLM) for response generation, and synthesize responses via Text-to-Speech (TTS), all while integrating blockchain data for cross-chain functionality.
+
+#### Technical Setup and Framework
+
+**Pipecat AI Integration**  
+Pipecat AI, as detailed in its documentation ([Pipecat AI Core Concepts](https://pipecat.ai/docs/core-concepts)), is an open-source framework for building voice agents, supporting various STT, TTS, and LLM services. In the setup, Daily is used for WebRTC transport, providing real-time audio interaction, as seen in the previous example with a Daily room URL for user access. The framework's pipeline processes user audio through STT, then an LLM, and finally TTS, allowing for dynamic conversation flows.
+
+**NVIDIA NeMo and Riva for Speech AI**  
+NVIDIA NeMo, a framework for training AI models, is crucial for developing ASR and TTS models, as noted in the NeMo user guide ([Introduction — NVIDIA NeMo Framework User Guide](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/starthere/intro.html)). Riva, the GPU-accelerated SDK, deploys these models for production, using TensorRT for optimizations, as described in the Riva user guide ([Riva — NVIDIA Riva](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/index.html)). In this setup, Riva's ParakeetSTTService and FastPitchTTSService are used, leveraging NeMo-trained models for high accuracy in speech processing.
+
+An unexpected detail is the seamless integration between NeMo and Riva, where models trained in NeMo can be exported to .riva format for deployment, as shown in a tutorial ([Text to Speech Finetuning using NeMo — NVIDIA Riva](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/tutorials/tts-finetune-nemo.html)), enhancing the agent's ability to handle real-time audio interactions across multiple languages and domains.
+
+**LLM and NVIDIA NIM**  
+The LLM is configured using NVIDIA NIM with the `meta/llama-3.3-70b-instruct` model, accessed via the NVIDIA API Catalog, as seen in the previous setup. This model supports function calling, enabling the agent to query blockchain data, a feature critical for its cross-chain capabilities.
+
+#### Blockchain Integration and Cross-Chain Functionality
+
+To make Cheshire the first cross-chain blockchain NVIDIA AI audio agent, blockchain integration is essential. The evidence leans toward implementing functions that query data from multiple blockchain networks, such as Ethereum and Solana, chosen for their popularity and differing architectures.
+
+**Implemented Functions**  
+- **get_balance(blockchain, address)**: Retrieves the balance of a wallet address on specified blockchains. For Ethereum, Web3.py connects to an Infura node ([Web3.py Documentation](https://web3py.readthedocs.io/en/stable/)), while for Solana, Solarium interacts with the Solana RPC ([Solarium GitHub](https://github.com/solana-labs/solarium)). The function handles validation, ensuring addresses match network formats (e.g., 0x-prefixed for Ethereum, base58 for Solana).
+- **get_crypto_price(symbol)**: Fetches cryptocurrency prices using CoinGecko API ([CoinGecko API Documentation](https://www.coingecko.com/en/api/documentation)), expanding the agent's utility to include market data.
+
+These functions are registered with the LLM via ChatCompletionToolParam, allowing it to call them during conversations, as seen in the tool calling mechanism of Pipecat AI. For example, if a user asks, "What's the balance of my Ethereum address?", the LLM calls `get_balance("ethereum", address)` and synthesizes the response.
+
+**Cross-Chain Considerations**  
+The cross-chain aspect is achieved by supporting multiple networks within the same function interface, with error handling for unsupported blockchains. This is a complex task, as each network has unique APIs and data formats, but it ensures Cheshire can serve diverse user needs, such as querying Ethereum balances and Solana transaction data.
+
+#### Agent Personality and User Interaction
+
+Cheshire's personality is designed to be friendly and approachable, reflecting the enigmatic nature of the Cheshire Cat. The system prompt defines it as "Cheshire, a blockchain-savvy AI audio agent," with instructions to provide clear, concise responses suitable for audio output. It introduces itself as specializing in blockchain topics, ensuring users understand its capabilities, and uses a playful tone to enhance user engagement.
+
+For example, if a user asks, "What's the balance of 0x123... on Ethereum?", Cheshire might respond, "Let me check that for you. The balance of 0x123... on Ethereum is 1.5 ETH. Curious about another blockchain?"
+
+#### Practical Implementation and Testing
+
+The implementation follows the Pipecat AI pipeline, with Daily providing the WebRTC interface for users to join and interact via audio. The agent processes voice commands, transcribes them using Riva's STT, passes them to the LLM for processing (potentially calling blockchain functions), and synthesizes responses via TTS. Testing involves joining the Daily room, asking questions like "What's the price of Bitcoin?" or "Balance of my Solana address?", and ensuring accurate, timely responses.
+
+Security is a concern, especially with financial data, so the agent avoids executing transactions directly, focusing on information retrieval. It also handles errors, such as invalid addresses, by providing user-friendly messages, enhancing reliability.
+
+#### Comparative Analysis
+
+To illustrate the roles and capabilities, here's a table comparing the components:
+
+| **Component**          | **Role**                                      | **Technology Used**                     |
+|-------------------------|-----------------------------------------------|-----------------------------------------|
+| Transport Layer         | Real-time audio interaction                  | Daily (WebRTC)                          |
+| Speech-to-Text (STT)    | Transcribe user audio to text                | Riva (ParakeetSTTService)               |
+| Text-to-Speech (TTS)    | Synthesize text to audio                     | Riva (FastPitchTTSService)              |
+| Large Language Model    | Process queries, call blockchain functions   | NIM (Llama 3.3 70B Instruct)            |
+| Blockchain Integration  | Query data from Ethereum, Solana, etc.       | Web3.py, Solarium, CoinGecko API        |
+
+This table highlights the distributed nature of the system, with each component playing a critical role in achieving the agent's functionality.
+
+#### Conclusion
+
+Creating the "Cheshire terminal chesh ai audio agent" as the first cross-chain blockchain NVIDIA AI audio agent is a complex but feasible task, leveraging Pipecat AI, NeMo, and Riva for speech, and integrating blockchain data for cross-chain capabilities. Its playful personality and focus on blockchain information make it a unique tool for users, with potential applications in financial services and crypto communities. The implementation ensures scalability, security, and user-friendly interaction, positioning it as an innovative solution in the AI and blockchain space.
+
+---
+
+### Key Citations
+- [Pipecat AI Core Concepts](https://pipecat.ai/docs/core-concepts)
+- [Introduction — NVIDIA NeMo Framework User Guide](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/starthere/intro.html)
+- [Riva — NVIDIA Riva](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/index.html)
+- [Text to Speech Finetuning using NeMo — NVIDIA Riva](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/tutorials/tts-finetune-nemo.html)
+- [Web3.py Documentation](https://web3py.readthedocs.io/en/stable/)
+- [Solarium GitHub](https://github.com/solana-labs/solarium)
+- [CoinGecko API Documentation](https://www.coingecko.com/en/api/documentation)
