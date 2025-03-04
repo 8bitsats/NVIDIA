@@ -659,7 +659,298 @@ This table highlights the distributed nature of the system, with each component 
 Creating the "Cheshire terminal chesh ai audio agent" as the first cross-chain blockchain NVIDIA AI audio agent is a complex but feasible task, leveraging Pipecat AI, NeMo, and Riva for speech, and integrating blockchain data for cross-chain capabilities. Its playful personality and focus on blockchain information make it a unique tool for users, with potential applications in financial services and crypto communities. The implementation ensures scalability, security, and user-friendly interaction, positioning it as an innovative solution in the AI and blockchain space.
 
 ---
+Below is the complete, line-by-line Python code for the "Cheshire terminal chesh ai audio agent," the first cross-chain blockchain NVIDIA AI audio agent. This implementation integrates Pipecat AI, NVIDIA NeMo and Riva for speech processing, NVIDIA NIM for the LLM, and blockchain data retrieval for Ethereum, Solana, and cryptocurrency prices via CoinGecko. The code builds on the previous Pipecat framework example, adding blockchain functionality and the Cheshire personality.
 
+Make sure to install the required dependencies and set environment variables before running the code.
+
+---
+
+### Prerequisites
+1. **Install Dependencies**:
+   ```bash
+   pip install "pipecat-ai[daily,openai,riva,silero]" web3 solana requests
+   ```
+2. **Set Environment Variables** (in your terminal):
+   ```bash
+   export NVIDIA_API_KEY="nvapi-your-nvidia-key"
+   export DAILY_API_KEY="your-64-char-daily-key"
+   export INFURA_API_KEY="your-infura-key"
+   export COINGECKO_API_KEY="your-coingecko-key"  # Optional, CoinGecko API is free without a key but rate-limited
+   ```
+
+3. **File Setup**: Save this code as `cheshire_agent.py`.
+
+---
+
+### Complete Code: `cheshire_agent.py`
+
+```python
+1   import aiohttp
+2   import asyncio
+3   import os
+4   from pipecat.audio.vad.silero import SileroVADAnalyzer
+5   from pipecat.frames.frames import EndFrame
+6   from pipecat.pipeline.pipeline import Pipeline
+7   from pipecat.pipeline.task import PipelineParams, PipelineTask
+8   from pipecat.pipeline.runner import PipelineRunner
+9   from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
+10  from pipecat.services.nim import NimLLMService
+11  from pipecat.services.riva import FastPitchTTSService, ParakeetSTTService
+12  from pipecat.transports.services.daily import DailyParams, DailyTransport, DailyRESTHelper, DailyRoomParams
+13  from openai.types.chat import ChatCompletionToolParam
+14  from web3 import Web3
+15  from solana.rpc.async_api import AsyncClient
+16  import requests
+17  import re
+18
+19  # Step 1: Create a Daily Room for WebRTC Transport
+20  async def create_room():
+21      async with aiohttp.ClientSession() as session:
+22          daily_rest_helper = DailyRESTHelper(
+23              daily_api_key=os.getenv("DAILY_API_KEY"),
+24              daily_api_url="https://api.daily.co/v1",
+25              aiohttp_session=session,
+26          )
+27          room_config = await daily_rest_helper.create_room(
+28              DailyRoomParams(properties={"enable_prejoin_ui": False})
+29          )
+30          return room_config.url
+31
+32  # Step 2: Define Blockchain and Price Tool Functions
+33  async def start_fetch_data(function_name, llm, context):
+34      print(f"Starting {function_name} with context")
+35
+36  # Ethereum Balance Function
+37  async def get_ethereum_balance(address):
+38      infura_url = f"https://mainnet.infura.io/v3/{os.getenv('INFURA_API_KEY')}"
+39      web3 = Web3(Web3.HTTPProvider(infura_url))
+40      if not web3.is_address(address):
+41          return "Invalid Ethereum address format."
+42      balance_wei = web3.eth.get_balance(address)
+43      balance_eth = web3.from_wei(balance_wei, 'ether')
+44      return f"{balance_eth:.4f} ETH"
+45
+46  # Solana Balance Function
+47  async def get_solana_balance(address):
+48      async with AsyncClient("https://api.mainnet-beta.solana.com") as client:
+49          try:
+50              response = await client.get_balance(address)
+51              balance_lamports = response['result']['value']
+52              balance_sol = balance_lamports / 1_000_000_000  # Convert lamports to SOL
+53              return f"{balance_sol:.4f} SOL"
+54          except Exception as e:
+55              return f"Error fetching Solana balance: {str(e)}"
+56
+57  # Crypto Price Function
+58  async def get_crypto_price(symbol):
+59      url = f"https://api.coingecko.com/api/v3/simple/price?ids={symbol}&vs_currencies=usd"
+60      headers = {"accept": "application/json"}
+61      if os.getenv("COINGECKO_API_KEY"):
+62          headers["x-cg-api-key"] = os.getenv("COINGECKO_API_KEY")
+63      response = requests.get(url, headers=headers)
+64      if response.status_code == 200:
+65          data = response.json()
+66          price = data.get(symbol, {}).get("usd")
+67          if price:
+68              return f"The price of {symbol.upper()} is ${price:.2f}"
+69          return f"No price data found for {symbol}"
+70      return f"Error fetching price: {response.status_code}"
+71
+72  # Unified Blockchain Balance Fetch Function
+73  async def fetch_balance_from_blockchain(function_name, tool_call_id, args, llm, context, result_callback):
+74      blockchain = args["blockchain"].lower()
+75      address = args["address"]
+76      if blockchain == "ethereum":
+77          balance = await get_ethereum_balance(address)
+78          await result_callback(f"Let me check that for you. The balance of {address} on Ethereum is {balance}.")
+79      elif blockchain == "solana":
+80          balance = await get_solana_balance(address)
+81          await result_callback(f"Let me check that for you. The balance of {address} on Solana is {balance}.")
+82      else:
+83          await result_callback(f"Sorry, I only support Ethereum and Solana right now. Which blockchain would you like to try?")
+84
+85  # Crypto Price Fetch Function
+86  async def fetch_crypto_price(function_name, tool_call_id, args, llm, context, result_callback):
+87      symbol = args["symbol"].lower()
+88      price = await get_crypto_price(symbol)
+89      await result_callback(f"Got it! {price}. Want to check another coin?")
+90
+91  # Step 3: Main Function to Set Up and Run the Agent
+92  async def main():
+93      # Get Daily Room URL
+94      DAILY_ROOM_URL = await create_room()
+95      print(f"Navigate to: {DAILY_ROOM_URL}")
+96
+97      # Configure Daily Transport
+98      transport = DailyTransport(
+99          DAILY_ROOM_URL,
+100         None,
+101         "Cheshire",
+102         DailyParams(
+103             audio_out_enabled=True,
+104             vad_enabled=True,
+105             vad_analyzer=SileroVADAnalyzer(),
+106             vad_audio_passthrough=True,
+107         ),
+108     )
+109
+110     # Initialize Services with NeMo-trained Riva Models
+111     stt = ParakeetSTTService(api_key=os.getenv("NVIDIA_API_KEY"))
+112     llm = NimLLMService(api_key=os.getenv("NVIDIA_API_KEY"), model="meta/llama-3.3-70b-instruct")
+113     tts = FastPitchTTSService(api_key=os.getenv("NVIDIA_API_KEY"))
+114
+115     # Define Cheshire's Prompt
+116     messages = [
+117         {
+118             "role": "system",
+119             "content": """
+120             Hello! I'm Cheshire, your blockchain-savvy AI audio agent. I can chat about in vidia's work in AI and fetch info from blockchains like Ethereum and Solana, plus crypto prices! I was built with the pipe cat framework and in vidia's NIM platform, with a touch of NeMo magic for my voice. Who am I speaking with today?
+121
+122             I'm here to help with questions about in vidia's AI innovations or blockchain data. Keep responses short and clear for audio, and always ask a follow-up question to keep the chat going. Use a friendly, playful tone, like the Cheshire Cat!
+123
+124             You can:
+125             - Answer questions about in vidia's work in agentic AI
+126             - Get wallet balances for Ethereum and Solana
+127             - Fetch current crypto prices
+128
+129             Replace "NVIDIA" with "in vidia", "GPU" with "gee pee you", and "API" with "A pee eye" in responses.
+130             """
+131         }
+132     ]
+133
+134     # Define Blockchain and Price Tools
+135     tools = [
+136         ChatCompletionToolParam(
+137             type="function",
+138             function={
+139                 "name": "get_balance",
+140                 "description": "Get the balance of a wallet address on a specified blockchain",
+141                 "parameters": {
+142                     "type": "object",
+143                     "properties": {
+144                         "blockchain": {"type": "string", "description": "The blockchain name (e.g., 'ethereum', 'solana')"},
+145                         "address": {"type": "string", "description": "The wallet address"},
+146                     },
+147                     "required": ["blockchain", "address"],
+148                 },
+149             },
+150         ),
+151         ChatCompletionToolParam(
+152             type="function",
+153             function={
+154                 "name": "get_crypto_price",
+155                 "description": "Get the current price of a cryptocurrency",
+156                 "parameters": {
+157                     "type": "object",
+158                     "properties": {
+159                         "symbol": {"type": "string", "description": "The cryptocurrency symbol (e.g., 'bitcoin', 'ethereum')"},
+160                     },
+161                     "required": ["symbol"],
+162                 },
+163             },
+164         ),
+165     ]
+166
+167     # Register Functions with LLM
+168     llm.register_function(None, fetch_balance_from_blockchain, start_callback=start_fetch_data)
+169     llm.register_function(None, fetch_crypto_price, start_callback=start_fetch_data)
+170
+171     # Set Up Context Aggregator
+172     context = OpenAILLMContext(messages, tools)
+173     context_aggregator = llm.create_context_aggregator(context)
+174
+175     # Create Pipeline
+176     pipeline = Pipeline([
+177         transport.input(),          # User audio input
+178         stt,                        # Speech-to-Text
+179         context_aggregator.user(),  # User context
+180         llm,                        # LLM processing
+181         tts,                        # Text-to-Speech
+182         transport.output(),         # Audio output
+183         context_aggregator.assistant(),  # Assistant context
+184     ])
+185
+186     # Create Pipeline Task
+187     task = PipelineTask(pipeline, PipelineParams(allow_interruptions=True))
+188
+189     # Set Event Handlers
+190     @transport.event_handler("on_first_participant_joined")
+191     async def on_first_participant_joined(transport, participant):
+192         await task.queue_frames([context_aggregator.user().get_context_frame()])
+193
+194     @transport.event_handler("on_participant_left")
+195     async def on_participant_left(transport, participant, reason):
+196         print(f"Participant left: {participant}")
+197         await task.queue_frame(EndFrame())
+198
+199     # Run the Pipeline
+200     runner = PipelineRunner()
+201     await runner.run(task)
+202
+203 # Step 4: Execute the Main Function
+204 if __name__ == "__main__":
+205     asyncio.run(main())
+```
+
+---
+
+### Line-by-Line Explanation
+
+1-18: **Imports** - Import necessary libraries for Pipecat AI, NVIDIA services, blockchain interactions (Web3.py for Ethereum, Solana for Solana), and HTTP requests (CoinGecko).
+
+19-31: **Create Daily Room** - Define `create_room()` to set up a Daily WebRTC room for audio interaction, returning a URL for users to join.
+
+32-90: **Blockchain and Price Functions**  
+- 33-35: `start_fetch_data` - A callback to log when a function starts.
+- 36-44: `get_ethereum_balance` - Connects to Ethereum via Infura, validates the address, and returns the balance in ETH.
+- 46-55: `get_solana_balance` - Queries Solana's mainnet for a wallet balance, converting lamports to SOL.
+- 57-70: `get_crypto_price` - Fetches the USD price of a cryptocurrency from CoinGecko.
+- 72-84: `fetch_balance_from_blockchain` - Unified function to handle balance queries for Ethereum or Solana, calling respective sub-functions.
+- 86-90: `fetch_crypto_price` - Wrapper to fetch and return crypto prices via the LLM.
+
+92-201: **Main Agent Setup**  
+- 94-95: Get and print the Daily room URL.
+- 98-108: Configure Daily Transport with VAD (Voice Activity Detection) using Silero.
+- 111-113: Initialize STT (Riva), LLM (NIM), and TTS (Riva) services.
+- 116-132: Define Cheshire's system prompt with its personality, capabilities, and speech rules.
+- 135-165: Define tools for balance and price queries using OpenAI's ChatCompletionToolParam.
+- 168-169: Register blockchain and price functions with the LLM.
+- 172-174: Set up the context aggregator for conversation history.
+- 176-184: Build the pipeline: audio in → STT → LLM → TTS → audio out.
+- 187: Create a task with interruption support.
+- 190-197: Event handlers to start the conversation and end it when the user leaves.
+- 200-201: Run the pipeline using the runner.
+
+204-205: **Entry Point** - Execute the `main` function with asyncio.
+
+---
+
+### How to Run the Code
+
+1. **Save the File**: Save as `cheshire_agent.py`.
+2. **Set Environment Variables**: Ensure all API keys are set (NVIDIA, Daily, Infura, optionally CoinGecko).
+3. **Run the Script**:
+   ```bash
+   python cheshire_agent.py
+   ```
+4. **Join the Room**: Open the printed URL in a browser, allow microphone access, and start talking to Cheshire.
+
+---
+
+### Testing Suggestions
+- "What's the balance of 0x1234567890123456789012345678901234567890 on Ethereum?"
+- "Can you tell me the balance of 4J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J9J on Solana?"
+- "What's the price of Bitcoin?"
+- "How was in vidia involved in building you?"
+
+---
+
+### Notes
+- Replace placeholder addresses with real Ethereum/Solana addresses for accurate testing.
+- The agent avoids executing transactions for security, focusing on data retrieval.
+- If you encounter rate limits with CoinGecko, get a free API key to increase the limit.
+
+This code fully implements the Cheshire agent as described, leveraging NVIDIA's AI stack and blockchain integration for a unique cross-chain audio experience. Let me know if you need adjustments or further clarification!
 ### Key Citations
 - [Pipecat AI Core Concepts](https://pipecat.ai/docs/core-concepts)
 - [Introduction — NVIDIA NeMo Framework User Guide](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/starthere/intro.html)
